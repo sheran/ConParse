@@ -23,6 +23,10 @@ azazel:conparse sheran$
 
 You will most likely be interested in the "ConParse_report_1311338937301.html" report.  
 
+Changelog:
+
+15th Aug 2011: Committed fixed batch file for Windows.  Thanks to Shafik Punja for pointing this out.
+
 
 License GPLv2:
 

@@ -32,6 +32,8 @@ public class Record
 		case 0x05: recType="Contact Record"; break;
 		case 0x07: recType="Record Type 0x07"; break;
 		case 0x18: recType="Base64 Record";break;
+		case 0x28: recType="Record Type 0x28"; break;
+		case 0x26: recType="Record Type 0x26"; break;
 		default: recType="Record Type "+type; break;
 		}
 		

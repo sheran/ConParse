@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 public class ContactRecord extends ConRecord{
-	private Vector unknownRecs = new Vector();
+	private Vector<ConRecord> unknownRecs = new Vector<ConRecord>();
 	private String contactName;
 	private String contactPIN;
 	private String status;
@@ -87,7 +87,7 @@ public class ContactRecord extends ConRecord{
 	
 	}
 	
-	public Vector getUnknown(){
+	public Vector<ConRecord> getUnknown(){
 		return unknownRecs;
 	}
 	

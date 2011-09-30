@@ -3,7 +3,10 @@ package net.zenconsult.forensics;
 import java.util.HashMap;
 
 public class ImageMimeTypes {
-	private static HashMap<String, String> imageTypeMapping = new HashMap<String, String>(){{
+	@SuppressWarnings("serial")
+	private static HashMap<String, String> imageTypeMapping = new HashMap<String, String>(){
+
+	{
 		put("image/bmp","bmp");
 		put("image/cis-cod","cod");
 		put("image/gif","gif");

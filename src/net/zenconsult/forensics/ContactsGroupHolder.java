@@ -2,16 +2,16 @@ package net.zenconsult.forensics;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.Vector;
 
-public class ContactGroupRecord extends ConRecord {
-	private Vector<ContactRecord> contacts = new Vector<ContactRecord>();
-	private Vector<ConRecord> unknownRecs = new Vector<ConRecord>();
+public class ContactsGroupHolder extends ConRecord{
+	Vector<ContactGroupRecord> contactGroups = new Vector<ContactGroupRecord>();
+	Vector<ConRecord> unknownRecs = new Vector<ConRecord>();
 	
-	public ContactGroupRecord(byte[] data) {
-		super(0x06, data);
-		
+	public ContactsGroupHolder(byte[] data) {
+		super(0x23, data);
 		int count = 0;
 		DataInputStream ds = new DataInputStream(new ByteArrayInputStream(data));
 		while(true){
@@ -25,19 +25,20 @@ public class ContactGroupRecord extends ConRecord {
 				ds.read(rDat);
 				count +=rSize;
 				
-				if(rType == 0x05){
-					contacts.add(new ContactRecord(rDat));
-					
+				if(rType == 0x06){
+					contactGroups.add(new ContactGroupRecord(rDat));
 				} else {
 					unknownRecs.add(new ConRecord(rType,rDat));
 				}
-				if(count == getSize())
+				if(count == getSize()){
 					break;
-			 
-			}  catch (IOException e) {
+				}
+					
+				
+			} catch(EOFException e){
+				break;
+			} catch (IOException e) {
 				e.printStackTrace();
-				
-				
 				
 			}
 			
@@ -50,8 +51,8 @@ public class ContactGroupRecord extends ConRecord {
 		}
 	}
 	
-	public Vector<ContactRecord> getContacts(){
-		return contacts;
+	public Vector<ContactGroupRecord> getContactGroups(){
+		return contactGroups;
 	}
 
 }

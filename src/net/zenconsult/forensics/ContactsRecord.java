@@ -2,22 +2,23 @@ package net.zenconsult.forensics;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.Vector;
 
 public class ContactsRecord extends ConRecord{
 	private ContactGroupRecord conGroup;
-	private Vector contactGroups;
+	private Vector<ContactGroupRecord> contactGroups;
 
 	public ContactsRecord(byte[] data) {
 		super(0x02, data);
 		
-		contactGroups = new Vector();
+		contactGroups = new Vector<ContactGroupRecord>();
 		DataInputStream ds = new DataInputStream(new ByteArrayInputStream(data));
 		int count = 0;
 		try {
 			while(true){
-				int rSize = ds.readShort();
+				int rSize = ds.readUnsignedShort();
 				count +=2;
 				int rType = ds.read();
 				count++;
@@ -33,6 +34,8 @@ public class ContactsRecord extends ConRecord{
 			}
 			
 			
+		} catch(EOFException e){
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -46,7 +49,7 @@ public class ContactsRecord extends ConRecord{
 		
 	}
 	
-	public Vector getContactGroups(){
+	public Vector<ContactGroupRecord> getContactGroups(){
 		return contactGroups;
 	}
 	

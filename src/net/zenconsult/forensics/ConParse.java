@@ -1,5 +1,5 @@
 /* 
-# ConParse v1.0 - Parser for BlackBerry Messenger .con (contact) files
+# ConParse v1.1 - Parser for BlackBerry Messenger .con (contact) files
 # Copyright (C) 2011, Sheran A. Gunasekera <sheran@zensay.com>
 #
 # This program is free software; you can redistribute it and/or
@@ -27,24 +27,35 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Vector;
 import java.util.Date;
+import java.util.Vector;
 
 public class ConParse 
 {
-	private static String verNum = "ConParse v1.0 - Copyright (C) 2011, Sheran A. Gunasekera <sheran@zensay.com>";
+	private static String verNum = "ConParse v1.1.089 - Copyright (C) 2011, Sheran A. Gunasekera <sheran@zensay.com>";
 	
 	public static void main(String[] args)
 	{
-		if(args.length > 2 || args.length == 0)
+		if((args == null)||(args.length == 0))
 		{
 			usage();
 			System.exit(0);
 		}
+		System.out.println(verNum);
+		String filename;
+		int files = args.length;
+		for(int k=0; k< files;k++)
+		{
+			filename = args[k];
+			mainRoutine(filename);
+		} 
 		
-		Vector records = new Vector();
-		String filename = args[0];
+		 
+	}
+	
+	public static void mainRoutine(String filename){
+		Vector<ConRecord> records = new Vector<ConRecord>();
+		Collective bigAssRecord = new Collective();
 		File conFile = new File(filename);
 		try 
 		{
@@ -61,27 +72,34 @@ public class ConParse
 				System.out.println("not a con file");
 				System.exit(0);
 			}
-			System.out.println(verNum);
 			System.out.println("Parsing: "+filename);
-			short unknownPad = ds.readShort();
+			ds.readShort(); // unknown pad
 			offset +=2;
-			short fileSize = ds.readShort();
+			ds.readUnsignedShort(); // File size?
 			offset +=2;
-			int readSoFar = offset;
 			while(true){
 				try {
-					int rSize = ds.readShort();
+					int rSize = ds.readUnsignedShort();
 					offset +=2;
 					int rType = ds.read();
 					offset++;
 					byte[] rData = new byte[rSize];
 					ds.read(rData);
 					offset +=rSize;
-					records.add(new ConRecord(rType,rData));
+					if(rType == 0x23){
+						bigAssRecord.add(rData);
+					} else if(rType == 0x22){
+						bigAssRecord.add(rData);
+					} else {
+						records.add(new ConRecord(rType,rData));
+					}
 				} catch(EOFException e) {
 					break;
 				}
 				
+			}
+			if(bigAssRecord.size() > 0){
+				records.add(new ConRecord(0x2,bigAssRecord.getContents()));
 			}
 			String rptFilename = "ConParse_report_"+new Date().getTime()+".html";
 			FileOutputStream reportFile = new FileOutputStream(new File(rptFilename));
@@ -95,7 +113,8 @@ public class ConParse
 			
 			
 			for(int k=0; k< records.size();++k){
-				ConRecord d = (ConRecord)records.get(k);
+				ConRecord d = (ConRecord)records.get(k); 
+				
 				
 				if(d.getType() == 0x14) {
 					MagicalRecord magic = new MagicalRecord(d.getRawData());
@@ -149,10 +168,10 @@ public class ConParse
 					reportFile.write(contactRpt.getBytes());
 					
 					ContactsRecord c = new ContactsRecord(d.getRawData());
-					Vector cGroups = c.getContactGroups();
+					Vector<ContactGroupRecord> cGroups = c.getContactGroups();
 					for(int cg=0; cg < cGroups.size(); ++cg){
 						ContactGroupRecord r = (ContactGroupRecord)cGroups.get(cg);
-						Vector contacts = r.getContacts();
+						Vector<ContactRecord> contacts = r.getContacts();
 						for(int a=0; a<contacts.size();++a){
 							ContactRecord cr = (ContactRecord)contacts.get(a);
 							String contactRpt1 = "<tr><td>"+cr.getContactName()+"</td><td>"+cr.getContactPIN()+"</td><td>"+cr.getStatus()+"</td><td>"+cr.getCustomName()+"</td><td>"+cr.getBarcode()+"</td></tr>\n";
@@ -175,7 +194,7 @@ public class ConParse
 		} catch (IOException e)
 		{
 			e.printStackTrace();
-		} 
+		}
 	}
 
 	public static void usage()

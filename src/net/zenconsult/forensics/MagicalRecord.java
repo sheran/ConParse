@@ -3,7 +3,6 @@ package net.zenconsult.forensics;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.Vector;
 
 public class MagicalRecord extends ConRecord{
 	private TimeZoneRecord tzRecord;

@@ -1,6 +1,5 @@
 package net.zenconsult.forensics;
 
-import java.util.TimeZone;
 
 public class StatusRecord extends ConRecord{
 

@@ -8,12 +8,12 @@ import java.util.Vector;
 
 public class Contact 
 {
-	private Hashtable contactDetails;
-	private Vector contacts;
+	private Hashtable<String, String> contactDetails;
+	private Vector<Hashtable<String, String>> contacts;
 	
 	public Contact(byte[] data)
 	{
-		contacts = new Vector();
+		contacts = new Vector<Hashtable<String, String>>();
 		DataInputStream bais = new DataInputStream(new ByteArrayInputStream(data));
 		for(;;)
 		{
@@ -36,14 +36,12 @@ public class Contact
 			}
 		}
 		
-		
-		
 	}
 	
 	
 	private void contactParse(byte[] rData)
 	{
-		contactDetails = new Hashtable();
+		contactDetails = new Hashtable<String, String>();
 		DataInputStream ds = new DataInputStream(new ByteArrayInputStream(rData));
 		for(;;)
 		{
@@ -91,7 +89,7 @@ public class Contact
 	}
 	
 	
-	public Vector getContacts()
+	public Vector<Hashtable<String,String>> getContacts()
 	{
 		return contacts;
 	

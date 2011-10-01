@@ -2,13 +2,15 @@ package net.zenconsult.forensics;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 
 public class MagicalRecord extends ConRecord{
-	private TimeZoneRecord tzRecord;
-	private ImageRecord imgFile;
-	private StatusRecord status;
-	private CountryFlagRecord countryFlag;
+	// Crappy hack to make sure there are no NPEs. I deserve to be shot.
+	private TimeZoneRecord tzRecord = new TimeZoneRecord("Not Set".getBytes());
+	private ImageRecord imgFile = new ImageRecord("".getBytes());
+	private StatusRecord status = new StatusRecord("Not Set".getBytes());
+	private CountryFlagRecord countryFlag = new CountryFlagRecord("Not Set".getBytes());
 	private UnknownRecord type0x04;
 	private ImageTypeRecord imgType;
 	private UnknownRecord type0x1d;
@@ -21,8 +23,18 @@ public class MagicalRecord extends ConRecord{
 		int count = 0;
 		try {
 			while(true){
-				int rSize = ds.readShort();
+				int rSize;
+				try {
+					rSize = ds.readUnsignedShort();
+					
+				} catch(EOFException e){
+					break;
+				}
 				count +=2;
+				if(rSize == 0){
+					count++;
+					continue;
+				}
 				int rType = ds.read();
 				count++;
 				byte[] rDat = new byte[rSize];
@@ -38,11 +50,9 @@ public class MagicalRecord extends ConRecord{
 				case 0x1D: type0x1d = new UnknownRecord(rType, rDat); break;
 				case 0x1E: type0x1e = new UnknownRecord(rType, rDat); break;
 				}
-				
 				if(count == getSize())
 					 break;
 			}
-			
 			
 		} catch (IOException e) {
 			e.printStackTrace();

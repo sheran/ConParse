@@ -1,8 +1,8 @@
 package net.zenconsult.forensics;
 
 public class ConRecord {
-	private int recSize;
-	private int recType;
+	private int recSize = 0;
+	private int recType = 0;
 	private byte[] recData;
 	
 	public ConRecord(int type, byte[] data){
@@ -20,18 +20,33 @@ public class ConRecord {
 	}
 	
 	public String getDataAsString(){
-		return new String(recData);
+		String output = "";
+		if(recData != null){
+			output = new String(recData);
+		}
+		return output;
+	}
+	
+	public String toHexString(){
+		String output = "";
+		if(recData != null){
+			Hex.toHexF(recData);
+		}
+		return output;
 	}
 	
 	public String getPrintableString() {
 		StringBuffer buf = new StringBuffer();
-		for(int k = 0; k < recData.length;++k){
-			if(recData[k] > 0x20 && recData[k] < 0x7F){
-				buf.append((char)recData[k]);
-			} else {
-				buf.append(".");
+		if(recData != null){
+			for(int k = 0; k < recData.length;++k){
+				if(recData[k] > 0x20 && recData[k] < 0x7F){
+					buf.append((char)recData[k]);
+				} else {
+					buf.append(".");
+				}
 			}
 		}
+		
 		return buf.toString();
 	}
 	

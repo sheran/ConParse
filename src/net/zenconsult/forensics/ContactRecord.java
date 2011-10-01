@@ -3,6 +3,8 @@ package net.zenconsult.forensics;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.SortedSet;
 import java.util.Vector;
 
 public class ContactRecord extends ConRecord{
@@ -21,7 +23,7 @@ public class ContactRecord extends ConRecord{
 		DataInputStream ds = new DataInputStream(new ByteArrayInputStream(data));
 		try {
 			while(true){
-				int rSize = ds.readShort();
+				int rSize = ds.readUnsignedShort();
 				count +=2;
 				int rType = ds.read();
 				count++;
@@ -125,6 +127,25 @@ public class ContactRecord extends ConRecord{
 
 	public String getBarcode() {
 		return barcode;
+	}
+	
+	public String getAllUnknown(){
+		StringBuffer sb = new StringBuffer();
+		for(Enumeration<ConRecord> e = unknownRecs.elements(); e.hasMoreElements();){
+			ConRecord c = e.nextElement();
+			sb.append(c.getType()+" --> "+c.toHexString()+"\n");
+		}
+		return sb.toString();
+	}
+	
+	public String getUnknown(int type){
+		StringBuffer sb = new StringBuffer();
+		for(Enumeration<ConRecord> e = unknownRecs.elements(); e.hasMoreElements();){
+			ConRecord c = e.nextElement();
+			if(c.getType() == type)
+				sb.append(c.getType()+" --> "+c.toHexString()+"\n");
+		}
+		return sb.toString();
 	}
 
 }

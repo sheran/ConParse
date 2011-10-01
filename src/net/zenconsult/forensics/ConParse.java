@@ -32,7 +32,7 @@ import java.util.Vector;
 
 public class ConParse 
 {
-	private static String verNum = "ConParse v1.1.089 - Copyright (C) 2011, Sheran A. Gunasekera <sheran@zensay.com>";
+	private static String verNum = "ConParse v1.1.124 - Copyright (C) 2011, Sheran A. Gunasekera <sheran@zensay.com>";
 	
 	public static void main(String[] args)
 	{
@@ -61,22 +61,20 @@ public class ConParse
 		{
 			DataInputStream ds = new DataInputStream(new FileInputStream(conFile));
 			int offset = 0;
-			byte firstCheck = ds.readByte();
+			byte firstCheck = ds.readByte(); // This is the signature/hash size
 			offset++;
-			ds.skipBytes(32);
-			offset += 32;
+			ds.skipBytes(firstCheck); // This is the hash that BBM will verify when restored
+			offset += firstCheck;
 			short secondCheck = ds.readShort();
 			offset +=2;
-			if(firstCheck != 0x20 && secondCheck != 0x7f80)
+			if(secondCheck != 0x7f80)
 			{
 				System.out.println("not a con file");
 				System.exit(0);
 			}
 			System.out.println("Parsing: "+filename);
-			ds.readShort(); // unknown pad
-			offset +=2;
-			ds.readUnsignedShort(); // File size?
-			offset +=2;
+			ds.readInt(); // Size of the rest of the bytes in the file; TODO: read this unsigned
+			offset +=4;
 			while(true){
 				try {
 					int rSize = ds.readUnsignedShort();
@@ -178,6 +176,7 @@ public class ConParse
 							reportFile.write(contactRpt1.getBytes());
 							contactCount++;
 						}
+						
 					}
 					reportFile.write(("<tr><td><b>Total Contacts:</b></td><td colspan=4><center><b>"+contactCount+"</b></center></td></tr>\n").getBytes());
 					reportFile.write("</table>\n".getBytes());

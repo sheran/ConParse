@@ -1,4 +1,4 @@
-ConParse v1.0 - Parser for BlackBerry Messenger .con (contact) files
+ConParse v1.1.124 - Parser for BlackBerry Messenger .con (contact) files
 
 ConParse is able to parse and generate reports from a BlackBerry Messenger .con file.  This file is generally only found on devices that are running 
 BlackBerry Messenger 5.0 and above.  To generate this file, you need to select "Back up contacts locally" on the device.  Then, a .con file is saved
